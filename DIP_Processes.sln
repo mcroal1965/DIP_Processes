@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASB_COLD_DIP_Process", "ASB_COLD_DIP_Process\ASB_COLD_DIP_Process.csproj", "{0B95A8E3-9552-47D6-B171-B22C5467C896}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantOpen_DIP_Extract", "InstantOpen_DIP_Extract\InstantOpen_DIP_Extract.csproj", "{ECDCD294-F5E3-4D92-B35A-897FB285B523}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B95A8E3-9552-47D6-B171-B22C5467C896}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B95A8E3-9552-47D6-B171-B22C5467C896}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B95A8E3-9552-47D6-B171-B22C5467C896}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B95A8E3-9552-47D6-B171-B22C5467C896}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECDCD294-F5E3-4D92-B35A-897FB285B523}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECDCD294-F5E3-4D92-B35A-897FB285B523}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECDCD294-F5E3-4D92-B35A-897FB285B523}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECDCD294-F5E3-4D92-B35A-897FB285B523}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {60BFD50B-1965-4998-9E3F-55DCCF01E62D}
+	EndGlobalSection
+EndGlobal
