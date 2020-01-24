@@ -12,7 +12,7 @@ namespace ASB_COLD_DIP_Process
         static void Main(string[] args)
         {
             string paramfile = args[0];
-            //string client = args[1];
+            //string client = args[1]; will not use
 
             String ReaderName = null;
 
