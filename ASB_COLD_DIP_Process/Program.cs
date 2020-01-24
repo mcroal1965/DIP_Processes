@@ -23,6 +23,7 @@ namespace ASB_COLD_DIP_Process
             String useStatsTable = null;
             String useInPath = null;
             String useOutPath = null;
+            String useDrivePath = null;
             String slash = Convert.ToString(Convert.ToChar(92));  //store the slash so it can be used in the filename later
 
             XmlTextReader reader = new XmlTextReader(paramfile);  // store each line of the input xml file into reader
@@ -55,6 +56,9 @@ namespace ASB_COLD_DIP_Process
 
                         if (ReaderName is "OutPath")
                         { useOutPath = reader.Value; }
+
+                        if (ReaderName is "DrivePath")
+                        { useDrivePath = reader.Value; }
                         break;
 
                 }
@@ -165,7 +169,7 @@ namespace ASB_COLD_DIP_Process
                             String outDIPindexfile = "DIPindex_"+ pathdate +"_"+ filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this report txt file
                             String outCOPYfile = pathdate + "_" + filenamewithextension.Replace(" ", "");  //the name of the file prefixed with the folder date it is in to handle multiple report files for same day
 
-                            String DIPIndexValue = "ASB Report Legacy\t" + Docdate + "\t" + RPTinstance + "\t" + RPTnumber + "\t" + RPTappl + "\t" + RPTtitle + "\t" + RED + "\t" + Desc + "\t" + useOutPath + slash +outCOPYfile;
+                            String DIPIndexValue = "ASB Report Legacy\t" + Docdate + "\t" + RPTinstance + "\t" + RPTnumber + "\t" + RPTappl + "\t" + RPTtitle + "\t" + RED + "\t" + Desc + "\t" + useDrivePath + slash +outCOPYfile;
 
                             //update the report control table if the report number was unknown so the next time we run into it will have values
                             if (Unknown == "YES")
