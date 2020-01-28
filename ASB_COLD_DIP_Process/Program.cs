@@ -105,7 +105,7 @@ namespace ASB_COLD_DIP_Process
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error: " + ex);
+                        Console.WriteLine("Error inserting New Date into Stats: " + ex);
                     }
 
                 foreach (string txtitem in txtitems)  //txtitem will contain the fullpath to .txt file
@@ -204,17 +204,17 @@ namespace ASB_COLD_DIP_Process
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine("Error: " + ex);
+                                        Console.WriteLine("Error Inserting Unknown Report: " + ex);
                                     }
                             }
                             //now that we have created the index values for this report, write the file out, copy the report from the temp folder to the DIP folder
                             File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
                             File.Copy(fullpathfilename, useOutPath + slash + outCOPYfile, true);
-                            //File.Delete(fullpathfilename);
+                            File.Delete(fullpathfilename);
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Error: " + ex);
+                            Console.WriteLine("Error reading Report Name metadata from table: " + ex);
                         }
                     }
                 }
@@ -231,7 +231,7 @@ namespace ASB_COLD_DIP_Process
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error: " + ex);
+                        Console.WriteLine("Error updating Stats table: " + ex);
                     }
 
                 foreach (string notitem in notitems)
@@ -264,7 +264,7 @@ namespace ASB_COLD_DIP_Process
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Error: " + ex);
+                            Console.WriteLine("Error inserting into Notes table: " + ex);
                         }
                     String sqlCmd5 = "UPDATE " + useStatsTable + " set [DIPStatus]='ALL COMPLETE' where [RptDate]='" + pathdate + "'";
                     using (SqlConnection connection5 = new SqlConnection(connectionString))  //connect to the sql server
@@ -279,9 +279,18 @@ namespace ASB_COLD_DIP_Process
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error: " + ex);
+                        Console.WriteLine("Error updating Stats table: " + ex);
                     }
+                    File.Delete(notitem);
                 }
+
+                //remove date folder Notes folder
+                if (Directory.Exists(dateitem+slash+"Notes" ))
+                {
+                    Directory.Delete(dateitem + slash + "Notes");
+                }
+                //remove date folder
+                Directory.Delete(dateitem);
             }
         }
     }
