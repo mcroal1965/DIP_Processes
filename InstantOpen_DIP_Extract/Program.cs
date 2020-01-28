@@ -28,6 +28,7 @@ namespace InstantOpen_DIP_Extract
             String useInPath = null;
             String useOutPath = null;
             String useDrivePath = null;
+            String useBackupPath = null;
 
             XmlTextReader reader = new XmlTextReader(paramfile);  // store each line of the input xml file into reader
 
@@ -74,7 +75,12 @@ namespace InstantOpen_DIP_Extract
                         {
                             useDrivePath = reader.Value;
                         }
-                    break;
+
+                        if (ReaderName is "BackupPath")
+                        {
+                            useBackupPath = reader.Value;
+                        }
+                        break;
                 }
             }
             //Get all items in all folder and subfolders
@@ -147,8 +153,11 @@ namespace InstantOpen_DIP_Extract
                             String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file     
                             String DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + ssn + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension; //build the line for the index file
 
+                            //create the DIPIndex file
                             File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
+                            //copy the source file to the folder with the DIPIndex file
                             File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
+                            File.Copy(fullpathfilename, useBackupPath + slash + filenamewithextension, true);
                             File.Delete(fullpathfilename);
                         }
                         catch (Exception ex)
@@ -204,6 +213,7 @@ namespace InstantOpen_DIP_Extract
 
                     File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
                     File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
+                    File.Copy(fullpathfilename, useBackupPath + slash + filenamewithextension, true);
                     File.Delete(fullpathfilename);
                 }
             }

@@ -7,6 +7,7 @@
     <Copyright>Agile Banking Consulting LLC (c) 2020</Copyright>
     <Company>Agile Banking Consulting LLC</Company>
     <Authors>Michael Croal &amp; Brent Croal</Authors>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
