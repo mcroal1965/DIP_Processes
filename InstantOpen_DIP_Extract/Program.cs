@@ -14,8 +14,10 @@ namespace InstantOpen_DIP_Extract
 
         static void Main(string[] args)
         {
-            string paramfile = args[0];
-            //string client = args[1];
+            String paramfile = args[0];
+            //String client = args[1];
+
+            String slash = Convert.ToString(Convert.ToChar(92));  //store the slash so it can be used in the filename later
 
             String ReaderName = null;
 
@@ -26,9 +28,6 @@ namespace InstantOpen_DIP_Extract
             String useInPath = null;
             String useOutPath = null;
             String useDrivePath = null;
-     
-
-            String slash = Convert.ToString(Convert.ToChar(92));  //store the slash so it can be used in the filename later
 
             XmlTextReader reader = new XmlTextReader(paramfile);  // store each line of the input xml file into reader
 
@@ -38,29 +37,44 @@ namespace InstantOpen_DIP_Extract
                 {
                     case XmlNodeType.Element:  //store the name of all node elements into ReaderName
                         ReaderName = reader.Name;
-                        break;
+                    break;
+
                     case XmlNodeType.Text:
                         if (ReaderName is "DBServer")
-                        { useDBServer = reader.Value; }
+                        {
+                            useDBServer = reader.Value;
+                        }
 
                         if (ReaderName is "Database")
-                        { useDatabase = reader.Value; }
+                        {
+                            useDatabase = reader.Value;
+                        }
 
                         if (ReaderName is "Table")
-                        { useTable = reader.Value; }
+                        {
+                            useTable = reader.Value;
+                        }
 
                         if (ReaderName is "XMLTable")
-                        { useXMLTable = reader.Value; }
+                        {
+                            useXMLTable = reader.Value;
+                        }
 
                         if (ReaderName is "InPath")
-                        { useInPath = reader.Value; }
+                        {
+                            useInPath = reader.Value;
+                        }
 
                         if (ReaderName is "OutPath")
-                        { useOutPath = reader.Value; }
+                        {
+                            useOutPath = reader.Value;
+                        }
 
                         if (ReaderName is "DrivePath")
-                        { useDrivePath = reader.Value; }
-                        break;
+                        {
+                            useDrivePath = reader.Value;
+                        }
+                    break;
                 }
             }
             //Get all items in all folder and subfolders
@@ -70,11 +84,12 @@ namespace InstantOpen_DIP_Extract
             String Docdate;
             Int32 workingitemnum = 0;
 
-            foreach (string item in allitems)
+            foreach (String item in allitems)
             {
                 ++workingitemnum;
                 Console.WriteLine("Working: " + workingitemnum + " of " + numitems);
                 FileInfo f = new FileInfo(item);
+
                 Int32 filenamelength = item.Length - pathlength;  //length of the filename+ext minus the fullpath to it
                 String filenamextension = Path.GetExtension(item);
                 Int32 filenamextensionlength = filenamextension.Length + 1;
@@ -82,8 +97,7 @@ namespace InstantOpen_DIP_Extract
                 String filenamewithextension = filename + filenamextension;
                 String fullpathfilename = item;
 
-                //handle the not xml files first
-                if (filenamextension != ".xml")
+                if (filenamextension != ".xml") //handle the not xml files first
                 {
                     string[] splittext = filename.Split("_");
                     String custname = splittext[0];
@@ -94,6 +108,7 @@ namespace InstantOpen_DIP_Extract
 
                     String docdate = splittext[5];
                     Docdate = docdate.Substring(0, 2) + "/" + docdate.Substring(2, 2) + "/" + docdate.Substring(4, 4);
+
                     String sqlCmd = "SELECT TOP 1 a.NautilusDoctype FROM  " + useTable + " a WHERE a.OnlineBankingDoctype='" + doctype + "'";
                     String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
 
@@ -113,7 +128,6 @@ namespace InstantOpen_DIP_Extract
                             {
                                 string NautilusDocType = dbreader.GetValue(dbreader.GetOrdinal("NautilusDoctype")).ToString();
                                 mappeddoctype = NautilusDocType;
-
                             }
                             connection.Close();  //close the sql server connection to the database                      
 
@@ -124,97 +138,73 @@ namespace InstantOpen_DIP_Extract
                             {
                                 DIPDoctype = "DEP Disclosure";
                                 Description = doctype;
-
                             }
                             else
                             {
                                 DIPDoctype = mappeddoctype;
-
                             }
 
-                            String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file
-
-                            //build the line for the index file
-                            String DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + ssn + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension;
+                            String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file     
+                            String DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + ssn + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension; //build the line for the index file
 
                             File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
                             File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
-                            //File.Delete(fullpathfilename);
-
+                            File.Delete(fullpathfilename);
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine("Error: " + ex);
-
                         }
                     }
                 }
-                //handle the xml files
-                if (filenamextension == ".xml")
+                
+                if (filenamextension == ".xml") //handle the xml files
                 {
-                    
-                    string[] splittext = filename.Split("_");
+                    String[] splittext = filename.Split("_");
                     String xmldesc = splittext[1];
 
                     filename = item.Substring(pathlength + 1, filenamelength - filenamextensionlength);
                     filenamewithextension = filename + filenamextension;
 
-                    XmlTextReader XMLfilecontents
-                        = new XmlTextReader(item);
-
-                    while (AppIDreader.Read())  //process the rows until no more
+                    String AppID = "";
+                    
+                    XmlDocument XmlDoc = new XmlDocument();
+                    XmlDoc.Load(fullpathfilename);
+                    XmlNodeList elemList = XmlDoc.GetElementsByTagName("Form");
+                    for (int i = 0; i< elemList.Count; i++)
                     {
-                        switch (AppIDreader.NodeType)
+                        AppID = elemList[i].Attributes["FormNo"].Value;
+                        if (AppID != "")
                         {
-                            case XmlNodeType.Element:  //store the name of all node elements into ReaderName
-                                ReaderName = AppIDreader.Name;
-                                Console.WriteLine("Element.ReaderName:"+ReaderName);
-                                if (ReaderName is "Form")
-                                    {
-                                    Console.WriteLine(AppIDreader);
-                                   
-                                    Console.WriteLine("Text.ReaderName:" + ReaderName);
-                                    //Console.WriteLine("AppIDs:" + AppIDs);
-                                    //AppIDs = ReaderName.;
-                                    //Console.WriteLine("AppIDs:"+AppIDs);
-                                    String AppID = "9";
-                                    String sqlCmd = "INSERT INTO " + useXMLTable + "(XMLFileName, ApplicationID) VALUES ('" + filename + "', '" + AppID + "')";
-                                    String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
+                            String sqlCmd = "INSERT INTO " + useXMLTable + "(XMLFileName, ApplicationID) VALUES ('" + filename + "', '" + AppID + "')";
+                            String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
 
-                                    using (SqlConnection connection2 = new SqlConnection(connectionString))  //connect to the sql server
-                                    using (SqlCommand cmd2 = connection2.CreateCommand())  //start a  sql command
-                                    {
-                                        try
-                                        {
-                                            cmd2.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
-                                            cmd2.CommandType = CommandType.Text;  //set it as a text command
-                                            connection2.Open();  //open the sql server connection to the database
-                                            int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
-                                            connection2.Close();  //close the sql server connection to the database
-
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Console.WriteLine("Error: " + ex);
-
-                                        }
-                                    }
-
+                            using (SqlConnection connection2 = new SqlConnection(connectionString))  //connect to the sql server
+                            using (SqlCommand cmd2 = connection2.CreateCommand())  //start a  sql command
+                            {
+                                try
+                                {
+                                    cmd2.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
+                                    cmd2.CommandType = CommandType.Text;  //set it as a text command
+                                    connection2.Open();  //open the sql server connection to the database
+                                    int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
+                                    connection2.Close();  //close the sql server connection to the database
                                 }
-                                break;
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Error: " + ex);
+                                }
+                            }
                         }
                     }
-                    
                     Docdate = filename.Substring(filenamelength - filenamextensionlength - 4, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 2, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 8, 4);
-
-                    String DIPIndexValue = "DEP Instant Open XML " + "\t" + Docdate + "\t" + xmldesc + "\t" + filename + "\t" + useDrivePath + slash + filename;
-
+       
                     String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file
+                    String DIPIndexValue = "DEP Instant Open XML " + "\t" + Docdate + "\t" + xmldesc + "\t" + filename + "\t" + useDrivePath + slash + filename; //build the line for the index file
 
                     File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
                     File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
-                    //File.Delete(fullpathfilename);
-
+                    File.Delete(fullpathfilename);
                 }
             }
         }
