@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ASB_COLD_DIP_Process": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Key": "Value",
+        "IHostingEnvironment": "REDBONE"
+      }
+    }
+  }
+}
