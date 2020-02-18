@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DeleteOutdatedFiles": {
+      "commandName": "Project",
+      "commandLineArgs": "h:\\Test30DayDelete\\*.txt Y 30"
+    }
+  }
+}

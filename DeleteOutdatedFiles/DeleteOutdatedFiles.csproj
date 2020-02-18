@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ApplicationIcon>AgileBanking.ico</ApplicationIcon>
+    <Company>Agile Banking Consulting LLC</Company>
+    <Authors>Brent Croal</Authors>
+    <Copyright>Agile Banking Consulting LLC 2020</Copyright>
+    <Description>Arguments are the path and pattern to delete, YN to recurse subdirectories, 99 number of days since Date Modified</Description>
+  </PropertyGroup>
+
+</Project>

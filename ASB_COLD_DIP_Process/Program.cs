@@ -67,7 +67,17 @@ namespace ASB_COLD_DIP_Process
                     {
                         cmd0.CommandText = sqlCmd0;  //set the commandtext to the sqlcmd
                         cmd0.CommandType = CommandType.Text;  //set it as a text command
-                        connection0.Open();  //open the sql server connection to the database
+                        try
+                        {
+                            connection0.Open();  //open the sql server connection to the database
+                        }
+                        catch
+                        {
+                            Console.WriteLine("SQL Server not available.");
+                            Console.WriteLine("Press any key to exit.");
+                            Console.ReadKey();
+                            Environment.Exit(0);
+                        }
                         int rowsadded = cmd0.ExecuteNonQuery();  //run the command and store the row count inserted
                         connection0.Close();  //close the sql server connection to the database
                     }
@@ -105,7 +115,17 @@ namespace ASB_COLD_DIP_Process
                             {
                                 cmd.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
                                 cmd.CommandType = CommandType.Text;  //set it as a text command
-                                connection.Open();  //open the sql server connection to the database
+                                try
+                                {
+                                    connection.Open();  //open the sql server connection to the database
+                                }
+                                catch
+                                {
+                                    Console.WriteLine("SQL Server not available.");
+                                    Console.WriteLine("Press any key to exit.");
+                                    Console.ReadKey();
+                                    Environment.Exit(0);
+                                }
                                 rowsreturned = sda.Fill(dt);  //run the command and put the results into the datatable and store the row count
                                 connection.Close();  //close the sql server connection to the database
 
@@ -166,7 +186,17 @@ namespace ASB_COLD_DIP_Process
                                         {
                                             cmd2.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
                                             cmd2.CommandType = CommandType.Text;  //set it as a text command
-                                            connection2.Open();  //open the sql server connection to the database
+                                            try
+                                            {
+                                                connection2.Open();  //open the sql server connection to the database
+                                            }
+                                            catch
+                                            {
+                                                Console.WriteLine("SQL Server not available.");
+                                                Console.WriteLine("Press any key to exit.");
+                                                Console.ReadKey();
+                                                Environment.Exit(0);
+                                            }
                                             int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
                                             connection2.Close();  //close the sql server connection to the database
                                         }
@@ -193,7 +223,17 @@ namespace ASB_COLD_DIP_Process
                     {
                         cmd3.CommandText = sqlCmd3;  //set the commandtext to the sqlcmd
                         cmd3.CommandType = CommandType.Text;  //set it as a text command
-                        connection3.Open();  //open the sql server connection to the database
+                        try
+                        {
+                            connection3.Open();  //open the sql server connection to the database
+                        }
+                        catch
+                        {
+                            Console.WriteLine("SQL Server not available.");
+                            Console.WriteLine("Press any key to exit.");
+                            Console.ReadKey();
+                            Environment.Exit(0);
+                        }
                         int rowsadded = cmd3.ExecuteNonQuery();  //run the command and store the row count inserted
                         connection3.Close();  //close the sql server connection to the database
                     }
@@ -226,7 +266,17 @@ namespace ASB_COLD_DIP_Process
                         {
                             cmd4.CommandText = sqlCmd4;  //set the commandtext to the sqlcmd
                             cmd4.CommandType = CommandType.Text;  //set it as a text command
-                            connection4.Open();  //open the sql server connection to the database
+                            try
+                            {
+                                connection4.Open();  //open the sql server connection to the database
+                            }
+                            catch
+                            {
+                                Console.WriteLine("SQL Server not available.");
+                                Console.WriteLine("Press any key to exit.");
+                                Console.ReadKey();
+                                Environment.Exit(0);
+                            }
                             int rowsadded = cmd4.ExecuteNonQuery();  //run the command and store the row count inserted
                             connection4.Close();  //close the sql server connection to the database
                         }
@@ -241,7 +291,17 @@ namespace ASB_COLD_DIP_Process
                         {
                             cmd5.CommandText = sqlCmd5;  //set the commandtext to the sqlcmd
                             cmd5.CommandType = CommandType.Text;  //set it as a text command
-                            connection5.Open();  //open the sql server connection to the database
+                            try
+                            {
+                                connection5.Open();  //open the sql server connection to the database
+                            }
+                            catch
+                            {
+                                Console.WriteLine("SQL Server not available.");
+                                Console.WriteLine("Press any key to exit.");
+                                Console.ReadKey();
+                                Environment.Exit(0);
+                            }
                             int rowsadded = cmd5.ExecuteNonQuery();  //run the command and store the row count inserted
                             connection5.Close();  //close the sql server connection to the database
                         }
@@ -264,6 +324,8 @@ namespace ASB_COLD_DIP_Process
             catch
             {
                 Console.WriteLine("App.config does not exist or does not meet requirements.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadKey();
                 Environment.Exit(0);
             }
         }

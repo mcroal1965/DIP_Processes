@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
-using System.Text;
+using System.Configuration;
 
 namespace nCinoEmailReport_AppID_LoanNumber
 {
@@ -9,64 +8,22 @@ namespace nCinoEmailReport_AppID_LoanNumber
     {
         public static String LOANnumber = "0";
 
-        public static void Main(string[] args)
+        public static void Main()
         {
+            String useInPath = ConfigurationManager.AppSettings["inpath"].ToString();
+            String useOutPath = ConfigurationManager.AppSettings["outpath"].ToString();
 
-            string paramfile = args[0];
-            //string client = args[1]; will not use
-
-            String ReaderName = null;
-
-            String useDBServer = null;
-            String useDatabase = null;
-            String useTable = null;
-            String useNoteTable = null;
-            String useStatsTable = null;
-            String useInPath = null;
-            String useOutPath = null;
-            String useDrivePath = null;
-            String slash = Convert.ToString(Convert.ToChar(92));  //store the slash so it can be used in the filename later
-
-            XmlTextReader reader = new XmlTextReader(paramfile);  // store each line of the input xml file into reader
-            
-            //parse the xml nodes into variables to use in the program
-            while (reader.Read())  //process the rows until no more
+            try
             {
-                switch (reader.NodeType)
-                {
-                    case XmlNodeType.Element:  //store the name of all node elements into ReaderName
-                        ReaderName = reader.Name;
-                        break;
-                    case XmlNodeType.Text:
-                        if (ReaderName is "DBServer")
-                        { useDBServer = reader.Value; }
-
-                        if (ReaderName is "Database")
-                        { useDatabase = reader.Value; }
-
-                        if (ReaderName is "Table")
-                        { useTable = reader.Value; }
-
-                        if (ReaderName is "NoteTable")
-                        { useNoteTable = reader.Value; }
-
-                        if (ReaderName is "StatsTable")
-                        { useStatsTable = reader.Value; }
-
-                        if (ReaderName is "InPath")
-                        { useInPath = reader.Value; }
-
-                        if (ReaderName is "OutPath")
-                        { useOutPath = reader.Value; }
-
-                        if (ReaderName is "DrivePath")
-                        { useDrivePath = reader.Value; }
-                        break;
-
-                }
+                Directory.CreateDirectory(useOutPath);
+            }
+            catch
+            {
+                Console.WriteLine("Directory " + useOutPath + " already exists.");
             }
 
-            
+            String slash = Convert.ToString(Convert.ToChar(92));  //store the slash so it can be used in the filename later
+    
             //Get all outlook message items in the folder, these mail messages are exported to the useInPath folder from the workflow action after the mailbox importer imports the message sent by nCino
             String[] allitems = Directory.GetFiles(useInPath, "*.msg");
             
@@ -81,10 +38,20 @@ namespace nCinoEmailReport_AppID_LoanNumber
                 String useOUTfile = useOutPath + slash + "GIM_Repair_nCinoEmail_" + itemname + ".txt";
                 File.Delete(useOUTfile);
 
-                using (var msg = new MsgReader.Outlook.Storage.Message(item))
+                try
                 {
-                    var textBody = msg.BodyText.Replace("\t","\n").Replace("_R1","");
-                    File.WriteAllText(temptxtfile, textBody);
+                    using (var msg = new MsgReader.Outlook.Storage.Message(item))
+                    {
+                        var textBody = msg.BodyText.Replace("\t", "\n").Replace("_R1", "");
+                        File.WriteAllText(temptxtfile, textBody);
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("File is not an Outlook formated message.");
+                    Console.WriteLine("Press any key to exit.");
+                    Console.ReadKey();
+                    Environment.Exit(0);
                 }
                 
                 //read in the file that contains the text version of the message body
