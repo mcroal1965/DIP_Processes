@@ -147,7 +147,7 @@ namespace nCinoEmailReport_AppID_LoanNumber
                         if (foundhtml == 1 && badhtmlline != "<html><head>" && badhtmlline != "</html>")
                         {
                             lineout = badhtmlline.Replace("<meta http-equiv=3D\"Content-Type\" content=3D\"text/html; charset=3Dutf-8\">", "");
-                            lineout = lineout.Replace("=3D", "=").Replace("<br>", "").Replace("&nbsp;", "");
+                            lineout = lineout.Replace("=3D", "=").Replace("<br>", "").Replace("&nbsp;", "").Replace("_R1","");
                             File.AppendAllText(temptxtfile, lineout.Substring(0, lineout.Length - 1));
                         }
                         else
