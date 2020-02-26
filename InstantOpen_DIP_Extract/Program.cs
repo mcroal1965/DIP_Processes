@@ -76,6 +76,8 @@ namespace InstantOpen_DIP_Extract
                         String docdate = splittext[5];
                         Docdate = docdate.Substring(0, 2) + "/" + docdate.Substring(2, 2) + "/" + docdate.Substring(4, 4);
 
+                        mappeddoctype = "";  //reset to assume not mapped
+
                         String sqlCmd = "SELECT TOP 1 a.NautilusDoctype FROM  " + useTable + " a WHERE a.OnlineBankingDoctype='" + doctype + "'";
                         String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
 
@@ -190,7 +192,7 @@ namespace InstantOpen_DIP_Extract
                         Docdate = filename.Substring(filenamelength - filenamextensionlength - 4, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 2, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 8, 4);
 
                         String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file
-                        String DIPIndexValue = "DEP Instant Open XML " + "\t" + Docdate + "\t" + xmldesc + "\t" + filename + "\t" + useDrivePath + slash + filename; //build the line for the index file
+                        String DIPIndexValue = "DEP Instant Open XML " + "\t" + Docdate + "\t" + xmldesc + "\t" + filename + "\t" + useDrivePath + slash + filenamewithextension; //build the line for the index file
 
                         File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
                         File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
