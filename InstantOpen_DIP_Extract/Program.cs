@@ -203,9 +203,13 @@ namespace InstantOpen_DIP_Extract
             }
             catch
             {
-                Console.WriteLine("App.config does not exist or does not meet requirements.");
+                Console.WriteLine("Config file does not exist or does not meet requirements.");
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
+                Environment.Exit(0);
+            }
+            finally
+            {
                 Environment.Exit(0);
             }
         }

@@ -100,7 +100,7 @@ namespace ASB_COLD_DIP_Process
 
                         String RPTnumber = filenamewithextension.Substring(0, filenamewithextension.IndexOf("."));
                         ++txtcount;
-                        String RPTinstance = filenamewithextension;
+                        String RPTinstance = filename;
                         Console.Write("Working Date Folder: " + pathdate + " # " + datecount + " of " + numdateitems + " | File: " + filename + " " + txtcount + " of " + numtxtitems + " | Note: " + notcount + " of " + numnotitems + "\n");
 
                         String sqlCmd = "SELECT TOP 1 a.Application, a.ReportTitle, cast(a.RptRetentionDays as varchar(5)) FROM " + useTable + " a WHERE a.ReportNumber='" + RPTnumber + "'";
@@ -323,9 +323,13 @@ namespace ASB_COLD_DIP_Process
             }
             catch
             {
-                Console.WriteLine("App.config does not exist or does not meet requirements.");
+                Console.WriteLine("Config does not exist or does not meet requirements.");
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
+                Environment.Exit(0);
+            }
+            finally
+            {
                 Environment.Exit(0);
             }
         }
