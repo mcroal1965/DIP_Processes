@@ -127,18 +127,14 @@ namespace nCinoEmailReport_AppID_LoanNumber
                         //write the text portion of the body out to a temporary file replacing tabs with new lines
                         String temptxtfile = useInPath + slash + itemname + ".html";
                         File.Delete(temptxtfile);
-                        String temptxtfile2 = useInPath + slash + itemname + ".trtxt";
+                        String temptxtfile2 = useInPath + slash + itemname + ".newhtmltxt";
                         File.Delete(temptxtfile2);
-                        String temptxtfile3 = useInPath + slash + itemname + ".tdtxt";
-                        File.Delete(temptxtfile3);
-                        String temptxtfile4 = useInPath + slash + itemname + ".col13txt";
-                        File.Delete(temptxtfile4);
                         //setup the filename for the one that will contain the COLD records, delete it if it already exists
                         String useOUTfile = useOutPath + slash + "GIM_Repair_nCinoEmail_" + itemname + ".txt";
                         File.Delete(useOUTfile);
 
                         #region CreateGoodHTML
-                        Console.WriteLine("Processing file: " + item + " step 1 of 4");
+                        Console.WriteLine("Processing file: " + item + " step 1 of 3");
                         string[] badhtmllines = File.ReadAllLines(item);
                         foreach (string badhtmlline in badhtmllines)
                         {
@@ -170,53 +166,30 @@ namespace nCinoEmailReport_AppID_LoanNumber
                         }
                         #endregion
                         #region CleanUpHTMLerrors
-                        #endregion
-                        #region ReadGoodHTMLWriteTableAsHTMLlines
-                        Console.WriteLine("Processing file: " + item + " step 2 of 4");
-                        XmlDocument xDoc = new XmlDocument();
-                        xDoc.Load(temptxtfile);
-                        foreach (XmlNode node in xDoc.DocumentElement.ChildNodes)
+                        //read temptxtfile as one line, do replaces as in lines 162 & 167 and any others that crop up and write out as tmptxtfile4
+                        Console.WriteLine("Processing file: " + item + " step 2 of 3");
+                        try
                         {
-                            foreach (XmlNode allNodes in node)
+                            string[] goodhtmllines = File.ReadAllLines(temptxtfile);
+                            foreach (string goodhtmlline in goodhtmllines)
                             {
-                                string x = allNodes.InnerText;
-
-                                if (x.Length >= 16)
-                                {
-                                    if (x.Substring(0, 16) == "Loan NumberLoan:")
-                                    {
-                                        string y = allNodes.InnerXml;
-                                        Int32 x1 = y.IndexOf("<tr");
-                                        Int32 x2 = y.IndexOf("</tr");
-                                        string y1 = x.Substring(x1, x2 - x1);
-                                        lineout = y.Replace("<tr", "\r<tr").Replace("</tr", "\r</tr");
-                                        File.AppendAllText(temptxtfile2, lineout);
-                                    }
-                                }
+                                string goodhtmllineout = goodhtmlline.Replace("<", "\r<");//.Replace("=3D", "=").Replace("<o:p>", "").Replace("</o:p>", "").Replace("<br>", "").Replace("&nbsp;", "").Replace("_R1", "").Replace("_M1", "");
+                                goodhtmllineout = goodhtmllineout.Replace("\r<html>","<html>");
+                                File.AppendAllText(temptxtfile2, goodhtmllineout);
                             }
                         }
-                        #endregion
-
-                        #region WriteLinesAsRowColumns
-                        Console.WriteLine("Processing file: " + item + " step 3 of 4");
-                        string[] trlinein = File.ReadAllLines(temptxtfile2);
-                        foreach (string trline in trlinein)
+                        catch (Exception ex)
                         {
-                            if (trline.Length > 20)
-                            {
-                                if (trline.Substring(0, 20) == "<tr class=\"dataRow\">")
-                                {
-                                    string z = trline.Replace("<td", "\r<td").Replace("</td", "\r</td").Replace("<tr", "\r<tr");
-                                    File.AppendAllText(temptxtfile3, z);
-                                }
-                            }
-
+                            Console.WriteLine("Exception encountered CleanUpHTMLerrors region:" + ex);
+                            Console.WriteLine("Press any key to exit.");
+                            Console.ReadKey();
+                            Environment.Exit(1);
                         }
                         #endregion
 
                         #region ReadLinesAsTableColumns
-                        Console.WriteLine("Processing file: " + item + " step 4 of 4");
-                        string[] tdlinein = File.ReadAllLines(temptxtfile3);
+                        Console.WriteLine("Processing file: " + item + " step 3 of 3");
+                        string[] tdlinein = File.ReadAllLines(temptxtfile2);
                         foreach (string tdline in tdlinein)
                         {
                             if (tdline.Length > 10)
@@ -239,19 +212,27 @@ namespace nCinoEmailReport_AppID_LoanNumber
                             if (colcount == 1 && tdline != "</td>")
                             {
                                 loannumber = tdline.Substring(tdline.IndexOf(">") + 1, tdline.Length - tdline.IndexOf(">") - 1);
+                                if (loannumber.IndexOf("_") > 0)
+                                {
+                                    loannumber = loannumber.Substring(0, loannumber.IndexOf("_") - 1);
+                                }
                             }
                             if (colcount == 3)
                             {
-                                appid = tdline.Substring(tdline.IndexOf(">") + 1, tdline.Length - tdline.IndexOf(">") - 1);
-                                if (loannumber != "-" && appid != "" && loannumber.Substring(0, 2) != "AN")
+                                if (loannumber.Length >= 2)
                                 {
-                                    String GIMDocType = "WF GIM Repair           ".Substring(0, 20);  //COLD config is doctype in 1st 20 characters
-                                    String GIMMaintType = "nCinoLoan#Swap                       ".Substring(0, 25);  //COLD config is desc kw in 21 for 25 characters
-                                    lineout2 = GIMDocType + GIMMaintType + "||" + appid + "|" + loannumber + "\n";
-                                    File.AppendAllText(useOUTfile, lineout2);
+                                    appid = tdline.Substring(tdline.IndexOf(">") + 1, tdline.Length - tdline.IndexOf(">") - 1);
+                                    if (loannumber != "-" && appid != "" && loannumber.Substring(0, 2) != "AN")
+                                    {
+                                        String GIMDocType = "WF GIM Repair           ".Substring(0, 20);  //COLD config is doctype in 1st 20 characters
+                                        String GIMMaintType = "nCinoLoan#Swap                       ".Substring(0, 25);  //COLD config is desc kw in 21 for 25 characters
+                                        lineout2 = GIMDocType + GIMMaintType + "||" + appid + "|" + loannumber + "\n";
+                                        File.AppendAllText(useOUTfile, lineout2);
+                                    }
                                 }
                             }
                         }
+                        Console.WriteLine("**********Finished processing file: " + item + "***********");
                         #endregion
 
                         #region CleanUp
@@ -259,10 +240,9 @@ namespace nCinoEmailReport_AppID_LoanNumber
                         File.Delete(item);
                         //delete the .txt file that stored the message body has html
                         File.Delete(temptxtfile);
-                        //delete the .txt file that stored the html rows
+                        //delete the .txt file that stored the good html rows
                         File.Delete(temptxtfile2);
-                        //delete the .txt file that stored the html columns
-                        File.Delete(temptxtfile3);
+                        
                         #endregion
                     }
                 }
@@ -271,7 +251,7 @@ namespace nCinoEmailReport_AppID_LoanNumber
                     Console.WriteLine("Exception encountered .eml region:" + ex);
                     Console.WriteLine("Press any key to exit.");
                     Console.ReadKey();
-                    Environment.Exit(0);
+                    Environment.Exit(1);
                 }
                 #endregion
             }
@@ -280,7 +260,7 @@ namespace nCinoEmailReport_AppID_LoanNumber
                 Console.WriteLine("Config file does not exist or does not meet requirements.");
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
-                Environment.Exit(0);
+                Environment.Exit(1);
             }
             finally
             {

@@ -98,7 +98,7 @@ namespace InstantOpen_DIP_Extract
                                     Console.WriteLine("SQL Server not available.");
                                     Console.WriteLine("Press any key to exit.");
                                     Console.ReadKey();
-                                    Environment.Exit(0);
+                                    Environment.Exit(1);
                                 }
                                 var dbreader = cmd.ExecuteReader();  //run the command and put the results into dbreader
 
@@ -136,6 +136,9 @@ namespace InstantOpen_DIP_Extract
                             catch (Exception ex)
                             {
                                 Console.WriteLine("Error: " + ex);
+                                Console.WriteLine("Press any key to exit.");
+                                Console.ReadKey();
+                                Environment.Exit(1);
                             }
                         }
                     }
@@ -177,7 +180,7 @@ namespace InstantOpen_DIP_Extract
                                             Console.WriteLine("SQL Server not available.");
                                             Console.WriteLine("Press any key to exit.");
                                             Console.ReadKey();
-                                            Environment.Exit(0);
+                                            Environment.Exit(1);
                                         }
                                         int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
                                         connection2.Close();  //close the sql server connection to the database
@@ -185,6 +188,9 @@ namespace InstantOpen_DIP_Extract
                                     catch (Exception ex)
                                     {
                                         Console.WriteLine("Error: " + ex);
+                                        Console.WriteLine("Press any key to exit.");
+                                        Console.ReadKey();
+                                        Environment.Exit(1);
                                     }
                                 } 
                             }
@@ -206,7 +212,7 @@ namespace InstantOpen_DIP_Extract
                 Console.WriteLine("Config file does not exist or does not meet requirements.");
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
-                Environment.Exit(0);
+                Environment.Exit(1);
             }
             finally
             {

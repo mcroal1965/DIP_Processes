@@ -76,7 +76,7 @@ namespace ASB_COLD_DIP_Process
                             Console.WriteLine("SQL Server not available.");
                             Console.WriteLine("Press any key to exit.");
                             Console.ReadKey();
-                            Environment.Exit(0);
+                            Environment.Exit(1);
                         }
                         int rowsadded = cmd0.ExecuteNonQuery();  //run the command and store the row count inserted
                         connection0.Close();  //close the sql server connection to the database
@@ -124,7 +124,7 @@ namespace ASB_COLD_DIP_Process
                                     Console.WriteLine("SQL Server not available.");
                                     Console.WriteLine("Press any key to exit.");
                                     Console.ReadKey();
-                                    Environment.Exit(0);
+                                    Environment.Exit(1);
                                 }
                                 rowsreturned = sda.Fill(dt);  //run the command and put the results into the datatable and store the row count
                                 connection.Close();  //close the sql server connection to the database
@@ -195,7 +195,7 @@ namespace ASB_COLD_DIP_Process
                                                 Console.WriteLine("SQL Server not available.");
                                                 Console.WriteLine("Press any key to exit.");
                                                 Console.ReadKey();
-                                                Environment.Exit(0);
+                                                Environment.Exit(1);
                                             }
                                             int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
                                             connection2.Close();  //close the sql server connection to the database
@@ -213,6 +213,9 @@ namespace ASB_COLD_DIP_Process
                             catch (Exception ex)
                             {
                                 Console.WriteLine("Error reading Report Name metadata from table: " + ex);
+                                Console.WriteLine("Press any key to exit.");
+                                Console.ReadKey();
+                                Environment.Exit(1);
                             }
                         }
                     }
@@ -232,7 +235,7 @@ namespace ASB_COLD_DIP_Process
                             Console.WriteLine("SQL Server not available.");
                             Console.WriteLine("Press any key to exit.");
                             Console.ReadKey();
-                            Environment.Exit(0);
+                            Environment.Exit(1);
                         }
                         int rowsadded = cmd3.ExecuteNonQuery();  //run the command and store the row count inserted
                         connection3.Close();  //close the sql server connection to the database
@@ -275,7 +278,7 @@ namespace ASB_COLD_DIP_Process
                                 Console.WriteLine("SQL Server not available.");
                                 Console.WriteLine("Press any key to exit.");
                                 Console.ReadKey();
-                                Environment.Exit(0);
+                                Environment.Exit(1);
                             }
                             int rowsadded = cmd4.ExecuteNonQuery();  //run the command and store the row count inserted
                             connection4.Close();  //close the sql server connection to the database
@@ -283,7 +286,10 @@ namespace ASB_COLD_DIP_Process
                         catch (Exception ex)
                         {
                             Console.WriteLine("Error inserting into Notes table: " + ex);
-                        }
+                            Console.WriteLine("Press any key to exit.");
+                            Console.ReadKey();
+                            Environment.Exit(1);
+                            }
                         String sqlCmd5 = "UPDATE " + useStatsTable + " set [DIPStatus]='ALL COMPLETE' where [RptDate]='" + pathdate + "'";
                         using (SqlConnection connection5 = new SqlConnection(connectionString))  //connect to the sql server
                         using (SqlCommand cmd5 = connection5.CreateCommand())  //start a  sql command
@@ -300,7 +306,7 @@ namespace ASB_COLD_DIP_Process
                                 Console.WriteLine("SQL Server not available.");
                                 Console.WriteLine("Press any key to exit.");
                                 Console.ReadKey();
-                                Environment.Exit(0);
+                                Environment.Exit(1);
                             }
                             int rowsadded = cmd5.ExecuteNonQuery();  //run the command and store the row count inserted
                             connection5.Close();  //close the sql server connection to the database
@@ -326,7 +332,7 @@ namespace ASB_COLD_DIP_Process
                 Console.WriteLine("Config does not exist or does not meet requirements.");
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
-                Environment.Exit(0);
+                Environment.Exit(1);
             }
             finally
             {
