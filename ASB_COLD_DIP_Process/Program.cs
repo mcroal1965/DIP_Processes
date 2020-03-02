@@ -28,6 +28,8 @@ namespace ASB_COLD_DIP_Process
                     {
                         Console.WriteLine("Directory " + useOutPath + " already exists.");
                     }
+
+
                 String useDrivePath = ConfigurationManager.AppSettings["drivepath"].ToString();
                 String slash = Convert.ToString(Convert.ToChar(92));  //store the slash so it can be used in the filename later
 
@@ -37,9 +39,17 @@ namespace ASB_COLD_DIP_Process
                 Int32 datecount = 0;
                 String[] DateItems = Directory.GetDirectories(useInPath, "*.");
                 Int32 numdateitems = DateItems.Count();
-
+                
                 foreach (string dateitem in DateItems)
                 {
+                    //check how many files exist in outfolder and cancel when > 5000 to let DIP process catch up
+                    String[] DIPItems = Directory.GetFiles(useOutPath, "*.*");
+                    Int32 numDIPitems = DIPItems.Count();
+                    if (numDIPitems > 5000)
+                    {
+                        Console.WriteLine("Too many items staged.  Breaking to let catch up.");
+                        Environment.Exit(0);
+                    }
                     FileInfo f = new FileInfo(dateitem);
                     String pathdate = f.Name;  //the name of the date folder only eg. 20190512
                     String datepath = dateitem;   //the fullpath of the date folder eg. H:\ASB_COLD\20190512
