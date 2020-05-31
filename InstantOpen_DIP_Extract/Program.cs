@@ -24,6 +24,7 @@ namespace InstantOpen_DIP_Extract
                 String useOutPath = ConfigurationManager.AppSettings["outpath"].ToString();
                 String useDrivePath = ConfigurationManager.AppSettings["drivepath"].ToString();
                 String useBackupPath = ConfigurationManager.AppSettings["backuppath"].ToString();
+                String filetype = "2";  //default to image file format
                 try
                 {
                     Directory.CreateDirectory(useBackupPath);
@@ -72,7 +73,6 @@ namespace InstantOpen_DIP_Extract
                         String acctnum = splittext[2];
                         String tranid = splittext[3];
                         String doctype = splittext[4];
-
                         String docdate = splittext[5];
                         Docdate = docdate.Substring(0, 2) + "/" + docdate.Substring(2, 2) + "/" + docdate.Substring(4, 4);
 
@@ -123,8 +123,16 @@ namespace InstantOpen_DIP_Extract
                                     DIPDoctype = mappeddoctype;
                                 }
 
+                                if (filenamextension == ".pdf")
+                                {
+                                    filetype = "16";
+                                }
+                                else
+                                {
+                                    filetype = "2";
+                                }
                                 String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file     
-                                String DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + ssn + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension; //build the line for the index file
+                                String DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + ssn + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension + "\t" + filetype; //build the line for the index file
 
                                 //create the DIPIndex file
                                 File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
@@ -198,7 +206,7 @@ namespace InstantOpen_DIP_Extract
                         Docdate = filename.Substring(filenamelength - filenamextensionlength - 4, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 2, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 8, 4);
 
                         String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file
-                        String DIPIndexValue = "DEP Instant Open XML " + "\t" + Docdate + "\t" + xmldesc + "\t" + filename + "\t" + useDrivePath + slash + filenamewithextension; //build the line for the index file
+                        String DIPIndexValue = "DEP Instant Open XML " + "\t" + Docdate + "\t" + xmldesc + "\t" + filename + "\t" + useDrivePath + slash + filenamewithextension + "\t" + "32"; //build the line for the index file
 
                         File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
                         File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
