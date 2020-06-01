@@ -23,7 +23,7 @@ namespace InstantOpen_DIP_Extract
                 String useInPath = ConfigurationManager.AppSettings["inpath"].ToString();
                 String useOutPath = ConfigurationManager.AppSettings["outpath"].ToString();
                 String useDrivePath = ConfigurationManager.AppSettings["drivepath"].ToString();
-                String useBackupPath = ConfigurationManager.AppSettings["backuppath"].ToString(); 
+                String useBackupPath = ConfigurationManager.AppSettings["backuppath"].ToString();
                 try
                 {
                     Directory.CreateDirectory(useBackupPath);
@@ -59,7 +59,6 @@ namespace InstantOpen_DIP_Extract
 
                     Int32 filenamelength = item.Length - pathlength;  //length of the filename+ext minus the fullpath to it
                     String filenamextension = Path.GetExtension(item);
-                    String filetype = "";
                     Int32 filenamextensionlength = filenamextension.Length + 1;
                     String filename = item.Substring(pathlength + 1, filenamelength - filenamextensionlength);
                     String filenamewithextension = filename + filenamextension;
@@ -122,18 +121,8 @@ namespace InstantOpen_DIP_Extract
                                     DIPDoctype = mappeddoctype;
                                 }
 
-                                if (filenamextension == "pdf")
-                                {
-                                    filetype = "16";
-                                }
-
-                                if (filenamextension == "tif" || filenamextension == "tiff")
-                                {
-                                    filetype = "2";
-                                }
-
                                 String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file     
-                                String DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + ssn + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension + "\t" + filetype; //build the line for the index file
+                                String DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + ssn + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension; //build the line for the index file
 
                                 //create the DIPIndex file
                                 File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
@@ -159,54 +148,44 @@ namespace InstantOpen_DIP_Extract
 
                         String AppID = "";
 
-                        try
+                        XmlDocument XmlDoc = new XmlDocument();
+                        XmlDoc.Load(fullpathfilename);
+                        XmlNodeList elemList = XmlDoc.GetElementsByTagName("Form");
+                        for (int i = 0; i < elemList.Count; i++)
                         {
-                            XmlDocument XmlDoc = new XmlDocument();
-                            XmlDoc.Load(fullpathfilename);
-                            XmlNodeList elemList = XmlDoc.GetElementsByTagName("Form");
-                            for (int i = 0; i < elemList.Count; i++)
+                            AppID = elemList[i].Attributes["FormNo"].Value;
+                            if (AppID != "")
                             {
-                                AppID = elemList[i].Attributes["FormNo"].Value;
-                                if (AppID != "")
-                                {
-                                    String sqlCmd = "INSERT INTO " + useXMLTable + "(XMLFileName, ApplicationID) VALUES ('" + filename + "', '" + AppID + "')";
-                                    String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
+                                String sqlCmd = "INSERT INTO " + useXMLTable + "(XMLFileName, ApplicationID) VALUES ('" + filename + "', '" + AppID + "')";
+                                String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
 
-                                    using (SqlConnection connection2 = new SqlConnection(connectionString))  //connect to the sql server
-                                    using (SqlCommand cmd2 = connection2.CreateCommand())  //start a  sql command
+                                using (SqlConnection connection2 = new SqlConnection(connectionString))  //connect to the sql server
+                                using (SqlCommand cmd2 = connection2.CreateCommand())  //start a  sql command
+                                {
+                                    try
                                     {
+                                        cmd2.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
+                                        cmd2.CommandType = CommandType.Text;  //set it as a text command
                                         try
                                         {
-                                            cmd2.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
-                                            cmd2.CommandType = CommandType.Text;  //set it as a text command
-                                            try
-                                            {
-                                                connection2.Open();  //open the sql server connection to the database
-                                            }
-                                            catch
-                                            {
-                                                Console.WriteLine("SQL Server not available.");
-                                                Console.WriteLine("Press any key to exit.");
-                                                Console.ReadKey();
-                                                Environment.Exit(0);
-                                            }
-                                            int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
-                                            connection2.Close();  //close the sql server connection to the database
+                                            connection2.Open();  //open the sql server connection to the database
                                         }
-                                        catch (Exception ex)
+                                        catch
                                         {
-                                            Console.WriteLine("Error: " + ex);
+                                            Console.WriteLine("SQL Server not available.");
+                                            Console.WriteLine("Press any key to exit.");
+                                            Console.ReadKey();
+                                            Environment.Exit(0);
                                         }
+                                        int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
+                                        connection2.Close();  //close the sql server connection to the database
                                     }
-                                }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Error: " + ex);
+                                    }
+                                } 
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Error: " + ex);
-                            Console.WriteLine("Press any key to exit.");
-                            Console.ReadKey();
-                            Environment.Exit(0);
                         }
                         Docdate = filename.Substring(filenamelength - filenamextensionlength - 4, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 2, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 8, 4);
 
