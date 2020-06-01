@@ -60,8 +60,8 @@ namespace DeleteOutdatedFiles
 
                     if (difference.TotalDays > days)
                     {
-                        Console.WriteLine("Will be deleted: " + f);
-                        //File.Delete(f);
+                        //Console.WriteLine("Will be deleted: " + f);
+                        File.Delete(f);
                     }
                 }
 
@@ -76,10 +76,10 @@ namespace DeleteOutdatedFiles
 
                             if (difference.TotalDays > days)
                             {
-                                Console.WriteLine("Will be deleted: " + f);
-                                //File.Delete(f);
+                                //Console.WriteLine("Will be deleted: " + f);
+                                File.Delete(f);
                             }
-                            Console.WriteLine("Will be deleted: " + f);
+                            //Console.WriteLine("Will be deleted: " + f);
                         }
                         DirSearch(d, filename, recurse, days);
                     }

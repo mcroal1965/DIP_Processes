@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "InstantOpen_DIP_Extract": {
+      "commandName": "Project",
+      "workingDirectory": "H:\\Scripts-C#\\InstantOpen_DIP_Extract"
+    }
+  }
+}
