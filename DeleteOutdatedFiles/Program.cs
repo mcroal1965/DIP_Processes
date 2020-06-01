@@ -47,6 +47,10 @@ namespace DeleteOutdatedFiles
                 Console.ReadKey();
                 Environment.Exit(0);
             }
+            finally
+            {
+                Environment.Exit(0);
+            }
         }
 
         static void DirSearch(string sDir, string filename, string recurse, int days)
@@ -61,7 +65,7 @@ namespace DeleteOutdatedFiles
                     if (difference.TotalDays > days)
                     {
                         Console.WriteLine("Will be deleted: " + f);
-                        //File.Delete(f);
+                        File.Delete(f);
                     }
                 }
 
@@ -77,7 +81,7 @@ namespace DeleteOutdatedFiles
                             if (difference.TotalDays > days)
                             {
                                 Console.WriteLine("Will be deleted: " + f);
-                                //File.Delete(f);
+                                File.Delete(f);
                             }
                             Console.WriteLine("Will be deleted: " + f);
                         }
@@ -88,6 +92,9 @@ namespace DeleteOutdatedFiles
             catch (System.Exception excpt)
             {
                 Console.WriteLine(excpt.Message);
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadKey();
+                Environment.Exit(1);
             }
         }
     }
