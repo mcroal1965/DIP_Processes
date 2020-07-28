@@ -25,6 +25,7 @@ namespace InstantOpen_DIP_Extract
                 String useDrivePath = ConfigurationManager.AppSettings["drivepath"].ToString();
                 String useBackupPath = ConfigurationManager.AppSettings["backuppath"].ToString();
                 String filetype = "2";  //default to image file format
+
                 try
                 {
                     Directory.CreateDirectory(useBackupPath);
