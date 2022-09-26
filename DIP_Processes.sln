@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nCinoEmailReport_AppID_Loan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeleteOutdatedFiles", "DeleteOutdatedFiles\DeleteOutdatedFiles.csproj", "{C2AD8075-7C66-4E3A-A952-BD2A23A5572A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantOpen_RSI_DIP_Extract", "InstantOpen_RSI_DIP_Extract\InstantOpen_RSI_DIP_Extract.csproj", "{26CD31B3-BABF-43C5-9C80-7C837D79B376}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{C2AD8075-7C66-4E3A-A952-BD2A23A5572A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C2AD8075-7C66-4E3A-A952-BD2A23A5572A}.Release|x64.ActiveCfg = Release|Any CPU
 		{C2AD8075-7C66-4E3A-A952-BD2A23A5572A}.Release|x64.Build.0 = Release|Any CPU
+		{26CD31B3-BABF-43C5-9C80-7C837D79B376}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26CD31B3-BABF-43C5-9C80-7C837D79B376}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26CD31B3-BABF-43C5-9C80-7C837D79B376}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{26CD31B3-BABF-43C5-9C80-7C837D79B376}.Debug|x64.Build.0 = Debug|Any CPU
+		{26CD31B3-BABF-43C5-9C80-7C837D79B376}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26CD31B3-BABF-43C5-9C80-7C837D79B376}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26CD31B3-BABF-43C5-9C80-7C837D79B376}.Release|x64.ActiveCfg = Release|Any CPU
+		{26CD31B3-BABF-43C5-9C80-7C837D79B376}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
