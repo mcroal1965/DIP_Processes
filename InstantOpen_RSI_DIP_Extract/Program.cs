@@ -55,8 +55,7 @@ namespace InstantOpen_RSI_DIP_Extract
 
                 foreach (String item in allitems)
                 {
-                    ++workingitemnum;
-                    Console.WriteLine("Working: " + workingitemnum + " of " + numitems);
+                    ++workingitemnum;                    
                     FileInfo f = new FileInfo(item);
 
                     Int32 filenamelength = item.Length - pathlength;  //length of the filename+ext minus the fullpath to it
@@ -66,139 +65,93 @@ namespace InstantOpen_RSI_DIP_Extract
                     String filenamewithextension = filename + filenamextension;
                     String fullpathfilename = item;
 
-                    if (filenamextension != ".xml") //handle the not xml files first
+                    Console.WriteLine("Working: " + workingitemnum + " of " + numitems + " " + '"' + filename + filenamextension + '"');
+
+                    if (f.Length > 0)
                     {
-                        string[] splittext = filename.Split('_');
-                        String custname = splittext[0];
-                        String custname2 = splittext[1];
-                        String acctnum = splittext[2];
-                        String tranid = splittext[3];
-                        String doctype = splittext[4];
-                        String docdate = splittext[5];
-                        Docdate = docdate.Substring(0, 2) + "/" + docdate.Substring(2, 2) + "/" + docdate.Substring(4, 4);
-
-                        mappeddoctype = "";  //reset to assume not mapped
-
-                        String sqlCmd = "SELECT TOP 1 a.NautilusDoctype FROM  " + useTable + " a WHERE a.OnlineBankingDoctype='" + doctype + "'";
-                        String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
-
-                        using (SqlConnection connection = new SqlConnection(connectionString))  //connect to the sql server
-                        using (SqlCommand cmd = connection.CreateCommand())  //start a  sql command
+                        if (filenamextension != ".xml") //handle the not xml files first
                         {
                             try
                             {
-                                //see if the document name extracted from the filename is in the mapping table
-                                cmd.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
-                                cmd.CommandType = CommandType.Text;  //set it as a text command
-                                try
-                                {
-                                    connection.Open();  //open the sql server connection to the database
-                                }
-                                catch (Exception ex)
-                                {                                           
-                                    Console.WriteLine("SQL Server not available.");
-                                    Console.WriteLine("Error: " + ex);
-                                    Console.WriteLine("Press any key to exit.");
-                                    Console.ReadKey();
-                                    Environment.Exit(1);
-                                }
-                                var dbreader = cmd.ExecuteReader();  //run the command and put the results into dbreader
+                                string[] splittext = filename.Split('_');
+                                String custname = splittext[0];
+                                String custname2 = splittext[1];
+                                String acctnum = splittext[2];
+                                String tranid = splittext[3];
+                                String doctype = splittext[4];
+                                String docdate = splittext[5];
+                           
+                                Docdate = docdate.Substring(0, 2) + "/" + docdate.Substring(2, 2) + "/" + docdate.Substring(4, 4);
 
-                                //if the reader has rows get the mapper doctype from the table
-                                while (dbreader.Read())
-                                {
-                                    string NautilusDocType = dbreader.GetValue(dbreader.GetOrdinal("NautilusDoctype")).ToString();
-                                    mappeddoctype = NautilusDocType;
-                                }
-                                connection.Close();  //close the sql server connection to the database                      
+                                mappeddoctype = "";  //reset to assume not mapped
 
-                                String Description = ""; //default this keyword to nil because if the document mapping doesnt exist we'll put the name from the file into description kw 
-                                String DIPDoctype = ""; //for DIP because these will map to DEP Disclosure and the workflow will assign Description to the TYP kw
-
-                                if (mappeddoctype == "")
-                                {
-                                    DIPDoctype = "DEP Disclosure";
-                                    Description = doctype;
-                                }
-                                else
-                                {
-                                    DIPDoctype = mappeddoctype;
-                                }
-
-                                if (filenamextension == ".pdf")
-                                {
-                                    filetype = "16";
-                                }
-                                else
-                                {
-                                    filetype = "2";
-                                }
-                                String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file     
-                                String DIPIndexValue = "";
-                                if (custname2 is null || custname2 == "")
-                                    DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension + "\t" + filetype; //build the line for the index file
-                                else
-                                    DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname2 + " " + custname + "\t" + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension + "\t" + filetype; //build the line for the index file  
-
-                                //create the DIPIndex file
-                                File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
-                                //copy the source file to the folder with the DIPIndex file
-                                File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
-                                File.Copy(fullpathfilename, useBackupPath + slash + filenamewithextension, true);
-                                File.Delete(fullpathfilename);
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Error: " + ex);
-                                Console.WriteLine("Press any key to exit.");
-                                Console.ReadKey();
-                                Environment.Exit(1);
-                            }
-                        }
-                    }
-
-                    if (filenamextension == ".xml") //handle the xml files
-                    {
-                        String[] splittext = filename.Split('_');
-                        String xmldesc = splittext[1];
-
-                        filename = item.Substring(pathlength + 1, filenamelength - filenamextensionlength);
-                        filenamewithextension = filename + filenamextension;
-
-                        String AppID = "";
-
-                        XmlDocument XmlDoc = new XmlDocument();
-                        XmlDoc.Load(fullpathfilename);
-                        XmlNodeList elemList = XmlDoc.GetElementsByTagName("Form");
-                        for (int i = 0; i < elemList.Count; i++)
-                        {
-                            AppID = elemList[i].Attributes["FormNo"].Value;
-                            if (AppID != "")
-                            {
-                                String sqlCmd = "INSERT INTO " + useXMLTable + "(XMLFileName, ApplicationID) VALUES ('" + filename + "', '" + AppID + "')";
+                                String sqlCmd = "SELECT TOP 1 a.NautilusDoctype FROM  " + useTable + " a WHERE a.OnlineBankingDoctype='" + doctype + "'";
                                 String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
 
-                                using (SqlConnection connection2 = new SqlConnection(connectionString))  //connect to the sql server
-                                using (SqlCommand cmd2 = connection2.CreateCommand())  //start a  sql command
+                                using (SqlConnection connection = new SqlConnection(connectionString))  //connect to the sql server
+                                using (SqlCommand cmd = connection.CreateCommand())  //start a  sql command
                                 {
                                     try
                                     {
-                                        cmd2.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
-                                        cmd2.CommandType = CommandType.Text;  //set it as a text command
+                                        //see if the document name extracted from the filename is in the mapping table
+                                        cmd.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
+                                        cmd.CommandType = CommandType.Text;  //set it as a text command
                                         try
                                         {
-                                            connection2.Open();  //open the sql server connection to the database
+                                            connection.Open();  //open the sql server connection to the database
                                         }
                                         catch (Exception ex)
-                                        {                                           
+                                        {
                                             Console.WriteLine("SQL Server not available.");
                                             Console.WriteLine("Error: " + ex);
                                             Console.WriteLine("Press any key to exit.");
                                             Console.ReadKey();
                                             Environment.Exit(1);
                                         }
-                                        int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
-                                        connection2.Close();  //close the sql server connection to the database
+                                        var dbreader = cmd.ExecuteReader();  //run the command and put the results into dbreader
+
+                                        //if the reader has rows get the mapper doctype from the table
+                                        while (dbreader.Read())
+                                        {
+                                            string NautilusDocType = dbreader.GetValue(dbreader.GetOrdinal("NautilusDoctype")).ToString();
+                                            mappeddoctype = NautilusDocType;
+                                        }
+                                        connection.Close();  //close the sql server connection to the database                      
+
+                                        String Description = ""; //default this keyword to nil because if the document mapping doesnt exist we'll put the name from the file into description kw 
+                                        String DIPDoctype = ""; //for DIP because these will map to DEP Disclosure and the workflow will assign Description to the TYP kw
+
+                                        if (mappeddoctype == "")
+                                        {
+                                            DIPDoctype = "DEP Disclosure";
+                                            Description = doctype;
+                                        }
+                                        else
+                                        {
+                                            DIPDoctype = mappeddoctype;
+                                        }
+
+                                        if (filenamextension == ".pdf")
+                                        {
+                                            filetype = "16";
+                                        }
+                                        else
+                                        {
+                                            filetype = "2";
+                                        }
+                                        String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file     
+                                        String DIPIndexValue = "";
+                                        if (custname2 is null || custname2 == "")
+                                            DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname + "\t" + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension + "\t" + filetype; //build the line for the index file
+                                        else
+                                            DIPIndexValue = DIPDoctype + "\t" + Docdate + "\t" + acctnum + "\t" + custname2 + " " + custname + "\t" + "\t" + tranid + "\t" + Description + "\t" + useDrivePath + slash + filenamewithextension + "\t" + filetype; //build the line for the index file  
+
+                                        //create the DIPIndex file
+                                        File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
+                                        //copy the source file to the folder with the DIPIndex file
+                                        File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
+                                        File.Copy(fullpathfilename, useBackupPath + slash + filenamewithextension, true);
+                                        File.Delete(fullpathfilename);
                                     }
                                     catch (Exception ex)
                                     {
@@ -209,22 +162,90 @@ namespace InstantOpen_RSI_DIP_Extract
                                     }
                                 }
                             }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Error: " + ex);
+                            }
                         }
-                        Docdate = filename.Substring(filenamelength - filenamextensionlength - 4, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 2, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 8, 4);
+                        if (filenamextension == ".xml") //handle the xml files
+                        {
+                            try
+                            {
+                                String[] splittext = filename.Split('_');
+                                String xmldesc = splittext[1];
 
-                        String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file
-                        String DIPIndexValue = "DEP Instant Open XML " + "\t" + Docdate + "\t" + xmldesc + "\t" + filename + "\t" + useDrivePath + slash + filenamewithextension + "\t" + "32"; //build the line for the index file
+                                filename = item.Substring(pathlength + 1, filenamelength - filenamextensionlength);
+                                filenamewithextension = filename + filenamextension;
 
-                        File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
-                        File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
-                        File.Copy(fullpathfilename, useBackupPath + slash + filenamewithextension, true);
-                        File.Delete(fullpathfilename);
+                                String AppID = "";
+
+                                XmlDocument XmlDoc = new XmlDocument();
+                                XmlDoc.Load(fullpathfilename);
+                                XmlNodeList elemList = XmlDoc.GetElementsByTagName("Form");
+                                for (int i = 0; i < elemList.Count; i++)
+                                {
+                                    AppID = elemList[i].Attributes["FormNo"].Value;
+                                    if (AppID != "")
+                                    {
+                                        String sqlCmd = "INSERT INTO " + useXMLTable + "(XMLFileName, ApplicationID) VALUES ('" + filename + "', '" + AppID + "')";
+                                        String connectionString = "Server=" + useDBServer + ";Database=" + useDatabase + ";User Id=viewer;Password=cprt_hsi";
+
+                                        using (SqlConnection connection2 = new SqlConnection(connectionString))  //connect to the sql server
+                                        using (SqlCommand cmd2 = connection2.CreateCommand())  //start a  sql command
+                                        {
+                                            try
+                                            {
+                                                cmd2.CommandText = sqlCmd;  //set the commandtext to the sqlcmd
+                                                cmd2.CommandType = CommandType.Text;  //set it as a text command
+                                                try
+                                                {
+                                                    connection2.Open();  //open the sql server connection to the database
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    Console.WriteLine("SQL Server not available.");
+                                                    Console.WriteLine("Error: " + ex);
+                                                    Console.WriteLine("Press any key to exit.");
+                                                    Console.ReadKey();
+                                                    Environment.Exit(1);
+                                                }
+                                                int rowsadded = cmd2.ExecuteNonQuery();  //run the command and store the row count inserted
+                                                connection2.Close();  //close the sql server connection to the database
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Console.WriteLine("Error: " + ex);
+                                                Console.WriteLine("Press any key to exit.");
+                                                Console.ReadKey();
+                                                Environment.Exit(1);
+                                            }
+                                        }
+                                    }
+                                }
+                                Docdate = filename.Substring(filenamelength - filenamextensionlength - 4, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 2, 2) + "/" + filename.Substring(filenamelength - filenamextensionlength - 8, 4);
+
+                                String outDIPindexfile = "DIPindex_" + "_" + filename + ".txt".Replace(" ", "");  //the name of the index file to be used for this file
+                                String DIPIndexValue = "DEP Instant Open XML " + "\t" + Docdate + "\t" + xmldesc + "\t" + filename + "\t" + useDrivePath + slash + filenamewithextension + "\t" + "32"; //build the line for the index file
+
+                                File.WriteAllText(useOutPath + slash + outDIPindexfile, DIPIndexValue);
+                                File.Copy(fullpathfilename, useOutPath + slash + filenamewithextension, true);
+                                File.Copy(fullpathfilename, useBackupPath + slash + filenamewithextension, true);
+                                File.Delete(fullpathfilename);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Error: " + ex);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Zero-byte file");
                     }
                 }
             }
             catch (Exception ex)
             {               
-                Console.WriteLine("Config file does not exist or does not meet requirements.");
                 Console.WriteLine("Error: " + ex);
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
