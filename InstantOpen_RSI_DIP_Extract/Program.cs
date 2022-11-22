@@ -94,9 +94,10 @@ namespace InstantOpen_RSI_DIP_Extract
                                 {
                                     connection.Open();  //open the sql server connection to the database
                                 }
-                                catch
-                                {
+                                catch (Exception ex)
+                                {                                           
                                     Console.WriteLine("SQL Server not available.");
+                                    Console.WriteLine("Error: " + ex);
                                     Console.WriteLine("Press any key to exit.");
                                     Console.ReadKey();
                                     Environment.Exit(1);
@@ -188,9 +189,10 @@ namespace InstantOpen_RSI_DIP_Extract
                                         {
                                             connection2.Open();  //open the sql server connection to the database
                                         }
-                                        catch
-                                        {
+                                        catch (Exception ex)
+                                        {                                           
                                             Console.WriteLine("SQL Server not available.");
+                                            Console.WriteLine("Error: " + ex);
                                             Console.WriteLine("Press any key to exit.");
                                             Console.ReadKey();
                                             Environment.Exit(1);
@@ -220,9 +222,10 @@ namespace InstantOpen_RSI_DIP_Extract
                     }
                 }
             }
-            catch
-            {
+            catch (Exception ex)
+            {               
                 Console.WriteLine("Config file does not exist or does not meet requirements.");
+                Console.WriteLine("Error: " + ex);
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
                 Environment.Exit(1);
