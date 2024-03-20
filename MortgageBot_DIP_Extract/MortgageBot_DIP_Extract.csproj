@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ApplicationIcon>AgileBanking.ico</ApplicationIcon>
+    <Authors>Brent Croal</Authors>
+    <Company>Agile Banking</Company>
+    <PackageIcon>AgileBanking.ico</PackageIcon>
+    <PackageIconUrl />
+  </PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="AgileBanking.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="AgileBanking.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
+	</ItemGroup>
+
+</Project>
